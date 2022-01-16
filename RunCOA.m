@@ -13,8 +13,8 @@ OF = @(x) sim_model(x);
 dv = 3;
 
 % Decision variables bounds:
-lb = [0 0 0];
-ub = [50 2 0.5];
+lb = [0, 0, 0];
+ub = [50, 2, 0.5];
 
 % COA algorithm parameters:
 % Stopping criteria - maximum number of iterations:
