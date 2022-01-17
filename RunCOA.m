@@ -27,7 +27,7 @@ Nc = 6;
 t = clock();
 
 % Run COA:
-[opt_result_dv, opt_result_OF] = COA(OF, lb, ub, max_iter, Ng, Nc);
+[opt_result_dv, opt_result_OF] = COA(OF, max_iter, Ng, Nc, lb, ub);
 
 % Display results:
 disp('Optimal decision variable values:');
