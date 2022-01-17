@@ -9,9 +9,6 @@ OF = @(x) sim_model(x);
 % Rastrigin function:
 % OF = @(x) Rastrigin(x);
 
-% Number of decision variables:
-dv = 3;
-
 % Decision variables bounds:
 lb = [0, 0, 0];
 ub = [50, 2, 0.5];
@@ -25,9 +22,6 @@ Ng = 25;
 
 % Number of coyotes in each group:
 Nc = 6;                     
-
-% Number of attempts:
-n = 5;
 
 % Time elapsed:
 t = clock();
