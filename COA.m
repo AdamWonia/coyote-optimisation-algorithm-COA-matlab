@@ -2,33 +2,33 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
     %% Parameters:
     Ndv = size(dv_min, 2);  % number of decision variables
 
-    %% Algorithm initialization (step 0):
+    %% Algorithm initialization:
     % Number of coyotes in population:
     Npop = Ng * Nc;
 
-    % Initialization of objective function:
+    % Initialization of the objective function:
     FF_kg = zeros(Npop, 1);
 
-    %% Generation of initial solutions (step 1):
+    %% Create initial coyote community:
     % Lower and upper bounds:
     Co_min = repmat(dv_min, Npop, 1);
     Co_max = repmat(dv_max, Npop, 1);
 
-    % Get random number in range of [0,1]
+    % Get a random number from the range of [0,1]:
     gamma = rand(Npop, Ndv);
 
     % Creating an initial population of coyotes:
     Co_kg = Co_min + gamma .* (Co_max - Co_min);  
 
-    % Form groups from randomly selected coyotes:
+    % Forming groups from randomly selected coyotes:
     groups = reshape(randperm(Npop), Ng, []);
 
-    %% Calculation of quality of the initial coyote population (step 2):
+    %% Determine the objective function value:
     % Penalty factor:
     pen_fact = 1000000; 
 
     for k = 1:Npop
-        % Verification of violation of restrictions:
+        % Verification of the boundaries:
         check_lb = Co_kg(k,:) < dv_min;
         check_ub = Co_kg(k,:) > dv_max;
         check_bound = check_lb + check_ub;
@@ -58,7 +58,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
             C_new_pop = Co_kg(groups(g,:),:);
             FF_old = FF_kg(groups(g,:),:);
 
-            %% Identification of best local solutions (step 3):
+            %% Update solutions for each group:
             Co_best = min(C_new_pop);
 
             % Finding the middle solution (median):
@@ -76,17 +76,17 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
                 % Calculation of new solutions:
                 Co_new(c,:) = C_new_pop(c,:) + rand*(Co_best - Co1) + rand*(Co_mid  - Co2);
 
-                % Checking violations of the limits of new solutions:
+                % Checking violations of limits of the new solutions:
                 check_lb = Co_new(c,:) < dv_min;
                 check_ub = Co_new(c,:) > dv_max;
                 check_bound = check_lb + check_ub;
                 penalty = sumsqr(sum(check_bound));
                 PF = pen_fact * penalty;
 
-                %% Calculation of OF for new solutions (step 4):
+                %% Evaluate the effectiveness level of new solutions:
                 FF_new = OF(Co_new(c,:)) + PF;
 
-                %% Selection of individuals (step 5):
+                %% Selection of individuals:
                 if FF_new < FF_old(c, 1)
                     FF_old(c, 1) = FF_new;
                     C_new_pop(c,:) = Co_new(c,:);
@@ -96,7 +96,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
                 iter = iter + 1;
             end
 
-            %% Creation of a new solution in each coyote group (step 6):
+            %% Create one new social condition in each group:
             % Selection of two random individuals from a new population (no repeat):
             par_idx = randperm(Nc, 2);
             C_par1 = C_new_pop(par_idx(1),:);
@@ -105,7 +105,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
             % Creating a new solution:
             new_coy = zeros(1, Ndv);
             for x = 1:Ndv
-                % Get random number in range of [0,1]:
+                % Get a random number from the range of [0,1]:
                 beta = rand;
                 % Selecting decision variables for new solution:
                 if beta < 1/Ndv
@@ -122,7 +122,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
             % Calculation of the new solution:
             new_coy_cost = OF(new_coy);
 
-            %% Identifying the worst solution and replacing it (step 7):
+            %% Determine the worst solution and replace it:
             [Co_worst, worst_idx] = max(FF_old);
 
             % Replacing the worst solution:
@@ -131,7 +131,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
                 C_new_pop(worst_idx,:) = new_coy;
             end
 
-            % Update on coyote groups:
+            % Update on the coyote groups:
             Co_kg(groups(g,:),:) = C_new_pop;
             FF_kg(groups(g,:),:) = FF_old;
 
@@ -139,7 +139,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
             iter = iter + 1;
         end
 
-        %% Exchange of solutions between groups (step 8):
+        %% Exchange of solutions between groups:
         if rand < (0.01/2) * Nc^2
             % Draw two groups and two coyotes per group:
             group_idx = randperm(Ng, 2);
@@ -154,7 +154,7 @@ function [opt_dv, opt_OF] = COA(OF, max_iter, Ng, Nc, dv_min, dv_max)
             groups(group_idx(2), coy_idx(2)) = coy_ex1;
         end
 
-        %% Determining the best solution (step 9):
+        %% Determining the best solution:
         [opt_OF, opt_idx] = min(FF_kg);
         opt_dv = Co_kg(opt_idx,:);    
 

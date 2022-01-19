@@ -1,5 +1,5 @@
 function y = Rastrigin (x)
-    % Rastrigin's Function
+    % Rastrigin's Function:
     A = 10;
     n = length(x);
     sum = 0;
