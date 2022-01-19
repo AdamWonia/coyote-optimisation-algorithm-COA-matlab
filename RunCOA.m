@@ -9,7 +9,7 @@ OF = @(x) sim_model(x);
 % Rastrigin function:
 % OF = @(x) Rastrigin(x);
 
-% Decision variables bounds:
+% Bounds for decision variables:
 lb = [0, 0, 0];
 ub = [50, 2, 0.5];
 
@@ -17,7 +17,7 @@ ub = [50, 2, 0.5];
 % Stopping criteria - maximum number of iterations:
 max_iter = 110;
 
-% Number of groups:
+% Number of coyote groups:
 Ng = 25;
 
 % Number of coyotes in each group:
@@ -26,7 +26,7 @@ Nc = 6;
 % Time elapsed:
 t = clock();
 
-% Run COA:
+% Run COA algorithm:
 [opt_result_dv, opt_result_OF] = COA(OF, max_iter, Ng, Nc, lb, ub);
 
 % Display results:
